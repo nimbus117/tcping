@@ -7,10 +7,12 @@
     "build": "tsc",
     "build:watch": "tsc -w",
     "test": "jest",
-    "precommit": "lint-staged && npm run build && npm test",
     "postinstall": "husky install",
+    "precommit": "lint-staged && npm run build && npm test",
+    "preversion": "npm test",
+    "postversion": "npm publish",
     "prepublishOnly": "npm run build && pinst --disable",
-    "postpublish": "pinst --enable"
+    "postpublish": "git push origin --all --tags; pinst --enable"
   },
   "bin": {
     "tcping": "dist/cli.js"
@@ -26,6 +28,10 @@
     "type": "git",
     "url": "git+https://github.com/nimbus117/tcping.git"
   },
+  "files": [
+    "src/",
+    "dist/"
+  ],
   "devDependencies": {
     "@types/jest": "^26.0.21",
     "@types/node": "^14.14.35",
