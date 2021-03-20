@@ -12,7 +12,7 @@
     "preversion": "npm test",
     "postversion": "npm publish",
     "prepublishOnly": "npm run build && pinst --disable",
-    "postpublish": "git push origin --all --tags; pinst --enable"
+    "postpublish": "git push origin master --tags; pinst --enable"
   },
   "bin": {
     "tcping": "dist/cli.js"
