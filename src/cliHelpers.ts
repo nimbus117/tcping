@@ -9,12 +9,14 @@ export const formatDetails = (pad: number) => (pd: PingDetails): string => {
 
   const e = pd.error;
   if (e)
-    message += red(e.syscall ? ` ${e.syscall} (${e.code})` : ` ${e.message}`);
+    message += red(
+      'syscall' in e ? ` ${e.syscall} (${e.code})` : ` ${e.message}`
+    );
 
   return message;
 };
 
-export const validate = (
+export const validateNumberFlags = (
   flags: { flag: string; number: number; max?: number }[]
 ): string[] =>
   flags

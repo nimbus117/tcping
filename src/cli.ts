@@ -4,7 +4,7 @@ import { green, red, yellow } from 'chalk';
 import ora from 'ora';
 import meow = require('meow');
 import { tcping } from './index';
-import { formatDetails, validate } from './cliHelpers';
+import { formatDetails, validateNumberFlags } from './cliHelpers';
 
 const DEFAULT_COUNT = 4;
 const DEFAULT_DELAY = 1000;
@@ -70,7 +70,7 @@ export const cli = meow(
   const port = (cli.input[1] || cli.flags.port) as number;
   const { count, delay, timeout, continuous } = cli.flags;
 
-  const validation = validate([
+  const validation = validateNumberFlags([
     { flag: 'port', number: port, max: 65535 },
     { flag: 'count', number: count },
     { flag: 'delay', number: delay },
