@@ -10,6 +10,7 @@ export type PingDetails = {
   host: string;
   port: number;
   duration: number;
+  timeout: number;
   error?: NodeJS.ErrnoException | Error;
 };
 
@@ -29,7 +30,9 @@ export const tcping = (options: PingOptions): Promise<PingDetails> => {
 
   return new Promise((resolve, reject) => {
     socket.connect(options.port, options.host, () => resolve(result()));
+
     socket.on('error', (error) => reject(result(error)));
+
     socket.setTimeout(options.timeout, () =>
       reject(result(Error(`timeout (${options.timeout}ms)`)))
     );

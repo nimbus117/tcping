@@ -7,6 +7,7 @@ describe('formatDetails', () => {
       host: 'host',
       port: 80,
       duration: 10,
+      timeout: 5000,
     });
 
     expect(details).toBe('host:80   10ms');
@@ -17,6 +18,7 @@ describe('formatDetails', () => {
       host: 'host',
       port: 80,
       duration: 10,
+      timeout: 5000,
       error: new Error('message'),
     });
 
@@ -34,6 +36,7 @@ describe('formatDetails', () => {
       host: 'host',
       port: 80,
       duration: 10,
+      timeout: 5000,
       error: error,
     });
 
