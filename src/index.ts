@@ -1,40 +1,35 @@
 import { Socket } from 'net';
 
-export type PingOptions = {
+type TcpingError = NodeJS.ErrnoException | Error;
+
+export interface TcpingOptions {
   host: string;
   port: number;
   timeout: number;
-};
+}
 
-export type PingDetails = {
-  host: string;
-  port: number;
+export interface TcpingResult extends TcpingOptions {
   duration: number;
-  timeout: number;
-  error?: NodeJS.ErrnoException | Error;
-};
+  error?: TcpingError;
+}
 
-export const tcping = (options: PingOptions): Promise<PingDetails> => {
+export const tcping = (options: TcpingOptions): Promise<TcpingResult> => {
   const socket = new Socket();
-  const start = process.hrtime();
+  const startTime = process.hrtime();
 
-  const result = (error: PingDetails['error'] = undefined) => {
-    const duration = process.hrtime(start);
+  const result = (error?: TcpingError) => {
+    const end = process.hrtime(startTime);
+    const duration = Math.floor((end[0] * 1e9 + end[1]) / 1e6);
     socket.destroy();
-    return {
-      ...options,
-      duration: Math.floor((duration[0] * 1e9 + duration[1]) / 1e6),
-      error,
-    };
+    return { ...options, duration, error };
   };
 
+  const { host, port, timeout } = options;
   return new Promise((resolve, reject) => {
-    socket.connect(options.port, options.host, () => resolve(result()));
-
+    socket.connect(port, host, () => resolve(result()));
     socket.on('error', (error) => reject(result(error)));
-
-    socket.setTimeout(options.timeout, () =>
-      reject(result(Error(`timeout (${options.timeout}ms)`)))
+    socket.setTimeout(timeout, () =>
+      reject(result(Error(`timeout (${timeout}ms)`)))
     );
   });
 };

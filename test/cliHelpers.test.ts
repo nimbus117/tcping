@@ -1,9 +1,9 @@
-import { formatDetails, validateNumberFlags } from '../src/cliHelpers';
+import { formatResult, validateNumberFlags } from '../src/cliHelpers';
 import { supportsColor } from 'chalk';
 
-describe('formatDetails', () => {
+describe('formatResult', () => {
   it('returns success details string', () => {
-    const details = formatDetails(4)({
+    const details = formatResult(4)({
       host: 'host',
       port: 80,
       duration: 10,
@@ -14,7 +14,7 @@ describe('formatDetails', () => {
   });
 
   it('returns an error message details string', () => {
-    const details = formatDetails(4)({
+    const details = formatResult(4)({
       host: 'host',
       port: 80,
       duration: 10,
@@ -32,7 +32,7 @@ describe('formatDetails', () => {
     error.code = 'code';
     error.syscall = 'syscall';
 
-    const details = formatDetails(4)({
+    const details = formatResult(4)({
       host: 'host',
       port: 80,
       duration: 10,
@@ -49,7 +49,7 @@ describe('formatDetails', () => {
 describe('validateNumberFlags', () => {
   it('validates the flag', () => {
     const invalid = validateNumberFlags([
-      { flag: 'port', number: 80, max: 65535 },
+      { name: 'port', value: 80, max: 65535 },
     ]);
     expect(invalid.length).toBe(0);
   });
@@ -57,27 +57,32 @@ describe('validateNumberFlags', () => {
   it('validates the flag is a number', () => {
     const invalid = validateNumberFlags([
       // @ts-expect-error: ignored to test invalid user input
-      { flag: 'port', number: 'x', max: 65535 },
+      { name: 'port', value: 'x', max: 65535 },
     ]);
     expect(invalid[0]).toBe('Please provide a port between 1 and 65535');
   });
 
-  it('validates the flag is a number greater than 1', () => {
+  it('validates the flag is a number greater than min', () => {
     const invalid = validateNumberFlags([
-      { flag: 'port', number: 0, max: 65535 },
+      { name: 'port', value: 50, max: 65535, min: 100 },
     ]);
-    expect(invalid[0]).toBe('Please provide a port between 1 and 65535');
+    expect(invalid[0]).toBe('Please provide a port between 100 and 65535');
   });
 
   it('validates the flag is a number less than max', () => {
     const invalid = validateNumberFlags([
-      { flag: 'port', number: 65536, max: 65535 },
+      { name: 'port', value: 65536, max: 65535 },
     ]);
     expect(invalid[0]).toBe('Please provide a port between 1 and 65535');
   });
 
   it('validates the flag is a number less than default max', () => {
-    const invalid = validateNumberFlags([{ flag: 'port', number: 600001 }]);
-    expect(invalid[0]).toBe('Please provide a port between 1 and 600000');
+    const invalid = validateNumberFlags([{ name: 'timeout', value: 3600001 }]);
+    expect(invalid[0]).toBe('Please provide a timeout between 1 and 3600000');
+  });
+
+  it('validates the flag is a number greater than the default min', () => {
+    const invalid = validateNumberFlags([{ name: 'timeout', value: 0 }]);
+    expect(invalid[0]).toBe('Please provide a timeout between 1 and 3600000');
   });
 });
