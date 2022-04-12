@@ -25,6 +25,6 @@ test('returns address lookup error', async () => {
     await tcping({ host: 'blah', port: 80, timeout: 1000 });
   } catch (errorResponse) {
     expect(errorResponse.error?.syscall).toBe('getaddrinfo');
-    expect(errorResponse.error?.code).toBe('EAI_AGAIN');
+    expect(['ENOTFOUND', 'EAI_AGAIN']).toContain(errorResponse.error?.code);
   }
 });
